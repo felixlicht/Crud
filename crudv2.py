@@ -108,10 +108,29 @@ def menu():
         else: print("Menu invalido \n")
     
 def cadastrar_livros(livros):
-    #ivros{ ID Titulo; ISBN; Editora; Descrição; Genero }
-    #Depois criar regra para não poder cadastrar mais de 1
     titulo    = input("Informe o Titulo: ")
-    isbn      = input("Informe o ISBN: ")
+    isbn      = input("Informe o ISBN: ").strip()
+    
+    for id, info in livros.items():
+        if info['Isbn'] == isbn:
+            print("ISBN ja cadastrado\n ")
+            '''
+            op = input("Digite \n"
+                  "1 - Para Listar o livro ja cadastrado:\n "
+                  "2 - Para Atualizar o livro ja cadastrado:\n "
+                  "3 - Para Remover o livro Ja cadastrado:\n ").strip()
+            match op :
+                case "1": 
+                    listar_livros(livros) 
+                    print("passei")
+                case "2": 
+                    atualizar_livros(livros) 
+                case "3": 
+                    remover_livros(livros)
+                case _:break
+            '''
+            return
+        
     autor     = input("Informe o Autor(a): ")
     #gera automatico, para não ter de ficar digitando
     editora   = "Lorem Ipsum"
@@ -124,7 +143,7 @@ def cadastrar_livros(livros):
     except ValueError:
         print("Valores Invalidos \n")
         return
-    nova_id = len(livros) + 1
+    nova_id = str(max([int(i) for i in livros.keys()], default=0) + 1)
     livros[nova_id] ={
         "Titulo" : titulo,
         "Isbn"   : isbn,
@@ -136,7 +155,6 @@ def cadastrar_livros(livros):
         "Descricao" : descricao,
         "Ano": ano
     }
-    print(livros)
     if(salvar_dados(ARQUIVO_LIVROS, livros)):
         print("Livro Cadastrado com Sucesso\n ")
     else:print("Não foi possível salvar o arquivo! \n")
@@ -159,14 +177,14 @@ def listar_livros(livros):
 
 def atualizar_livros(livros):
     print("\nMENU DE ATUALIZAÇÃO DE LIVROS ")
-    isbn   = input("Digite a ISBN do produto para atualizar: ")
+    isbn_busca = input("Digite a ISBN do livro para atualizar: ").strip()
 
     for id, info in livros.items():
-        if info['Isbn'] == isbn:
-            titulo    = input("Informe o Titulo: ")
-            isbn      = input("Informe o ISBN: ")
+        if info['Isbn'] == isbn_busca:
+            print(f"\nLivro encontrado: {info['Titulo']}\n")
+            titulo    = input("Informe o Título: ")
+            isbn      = input("Informe o novo ISBN: ")
             autor     = input("Informe o Autor(a): ")
-            #gera automatico, para não ter de ficar digitando
             editora   = "Lorem Ipsum"
             genero    = "dolor sit amet" 
             descricao = "consectetur adipiscing elit"
@@ -175,29 +193,44 @@ def atualizar_livros(livros):
                 custo  = float(input("Informe o Custo: "))
                 venda  = float(input("Informe a Venda: "))
             except ValueError:
-                print("Valores Invalidos \n")
+                print("Valores inválidos.\n")
                 return
 
-    livros[id] ={
-        "Titulo" : titulo,
-        "Isbn"   : isbn,
-        "Autor"  : autor,
-        "Custo"  : custo,
-        "Venda"  : venda,
-        "Editora": editora,
-        "Genero" : genero,
-        "Descricao" : descricao,
-        "Ano": ano
-    }
-    if(salvar_dados(ARQUIVO_LIVROS, livros)):
-        print("Livro Atualizado com sucesso \n")
+            livros[id] = {
+                "Titulo" : titulo,
+                "Isbn"   : isbn,
+                "Autor"  : autor,
+                "Custo"  : custo,
+                "Venda"  : venda,
+                "Editora": editora,
+                "Genero" : genero,
+                "Descricao" : descricao,
+                "Ano": ano
+            }
+
+            if salvar_dados(ARQUIVO_LIVROS, livros):
+                print("Livro atualizado com sucesso.\n")
+            else:
+                print("Não foi possível salvar as alterações.\n")
+            break
     else:
-        print("Nao foi possivel atualizar o livro \n")
-    
+        print("ISBN não encontrada.\n")
 
 def remover_livros(livros):
     print("\nMENU DE EXCLUSÃO DE LIVROS ")
-    #salvar_dados(ARQUIVO_LIVROS, livro)
-    pass
-    
+    isbn_busca = input("Digite o ISNB do livro que deseja remover: ").strip
+    if not isbn:
+        print("ISBN invalido\n ")
+        return
+    for id, info in livros.items():         
+        if info['Isbn'] == isbn_busca:
+            removido = livros.pop(id)
+            if( salvar_dados (ARQUIVO_LIVROS, livros)):
+                print(f"Livro ID {id} Titulo {info['Titulo']} Removido com sucesso\n")
+            else:
+                print("Erro ao salvar\n")
+            break
+    else:
+        print("ISBN nao encontrada \n")
+        
 iniciar()
