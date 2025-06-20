@@ -1,0 +1,13 @@
+{
+    "1": {
+        "Titulo": "william o brabo de bh",
+        "Isbn": "1234769",
+        "Autor": "felix licht",
+        "Custo": 12.0,
+        "Venda": 34.0,
+        "Editora": "Lorem Ipsum",
+        "Genero": "dolor sit amet",
+        "Descricao": "consectetur adipiscing elit",
+        "Ano": "2025"
+    }
+}
