@@ -14,6 +14,10 @@ ARQUIVO_LIVROS = "livros.json"
 
 # Funções de Escrita e Leitura de dados
 def carregar_dados(arquivo):
+    '''
+        Verifica se o arquivo existe no caminho
+        Caso exista, retorna o arquivo Json
+    '''
     if os.path.exists(arquivo):
         with open(arquivo, "r", encoding="utf-8") as f:
             try:
@@ -24,6 +28,10 @@ def carregar_dados(arquivo):
 
 
 def salvar_dados(arquivo, dados):
+    '''
+        Tenta abrir o arquivo json
+        Caso exista, retorna True
+    '''
     try:
         with open(arquivo, "w", encoding="utf-8") as f:
             json.dump(dados, f, indent=4, ensure_ascii=False)
@@ -34,6 +42,11 @@ def salvar_dados(arquivo, dados):
 
 
 def iniciar():
+    '''
+        Primeiro Menu do Sistema
+        Utilizado para fazer login
+        Enquanto verdadeiro, o Menu ficar aberto
+    '''
     while True:
         print("Menu de Seleção ")
         print("1 - Fazer login ")
@@ -55,11 +68,18 @@ def iniciar():
 
 
 def pula_linhas():
+    '''
+        Auto Explicativo: Pula Linhas
+    '''
     print("\n")
 
 
 # Funções de login e cadastro
 def login():
+    '''
+        Função que permite o usuário
+        - Fazer Login
+    '''
     carregar_dados(ARQUIVO_USUARIOS)
     usuarios = carregar_dados(ARQUIVO_USUARIOS)
     print("MENU DE LOGIN ")
@@ -78,6 +98,10 @@ def login():
 
 
 def cadastrar_usuario():
+    '''
+        Permite o Usuário de Cadastrar
+        Caso não haja um login com o mesmo login 
+    '''
     # carregar_dados(ARQUIVO_USUARIOS)
     print("MENU DE CADASTROS DE USUARIOS ")
     usuarios = carregar_dados(ARQUIVO_USUARIOS)
@@ -99,6 +123,10 @@ def cadastrar_usuario():
 
 # Usuarios só terão acesso a estas funções após completar todas as estapas de cadastro e login
 def menu():
+    '''
+        Segundo Menu
+        Usuário só terá acesso após fazer o login
+    '''
     livros = carregar_dados(ARQUIVO_LIVROS)
     while True:
         print("1 - Cadastrar Livros ")
@@ -107,43 +135,33 @@ def menu():
         print("4 - Remover Livros")
         print("0 - Cancelar ")
 
-        escolha = input("Escolha o menu: \n")
+        escolha = int(input("Escolha o menu: \n"))
 
         options = {
-            "1": cadastrar_livros,
-            "2": listar_livros,
-            "3": atualizar_livros,
-            "4": remover_livros,
+            1: cadastrar_livros,
+            2: listar_livros,
+            3: atualizar_livros,
+            4: remover_livros,
         }
 
         if escolha not in options.keys():
-            return print("Menu invalido \n")
+            print("Menu invalido \n")
+            continue 
 
         options[escolha](livros)
 
 
 def cadastrar_livros(livros):
+    '''
+        Permite o usuário cadastrar um livro novo
+        Desde que o ISBN informado não esteja cadastrado anteriormente
+    '''
     titulo = input("Informe o Titulo: ")
-    isbn = input("Informe o ISBN: ").strip()
+    isbn_nova = input("Informe o ISBN: ").strip()
 
-    for id, info in livros.items():
-        if info["Isbn"] == isbn:
+    for _,info in livros.items(): #como livros.items() retorna uma tupla, é preciso desempacotar o dic
+        if info["Isbn"] == str(isbn_nova):
             print("ISBN ja cadastrado\n ")
-            """
-            op = input("Digite \n"
-                  "1 - Para Listar o livro ja cadastrado:\n "
-                  "2 - Para Atualizar o livro ja cadastrado:\n "
-                  "3 - Para Remover o livro Ja cadastrado:\n ").strip()
-            match op :
-                case "1": 
-                    listar_livros(livros) 
-                    print("passei")
-                case "2": 
-                    atualizar_livros(livros) 
-                case "3": 
-                    remover_livros(livros)
-                case _:break
-            """
             return
 
     autor = input("Informe o Autor(a): ")
@@ -161,7 +179,7 @@ def cadastrar_livros(livros):
     nova_id = str(max([int(i) for i in livros.keys()], default=0) + 1)
     livros[nova_id] = {
         "Titulo": titulo,
-        "Isbn": isbn,
+        "Isbn": isbn_nova,
         "Autor": autor,
         "Custo": custo,
         "Venda": venda,
@@ -177,10 +195,13 @@ def cadastrar_livros(livros):
 
 
 def listar_livros(livros):
+    '''
+        Permite o usuário listar todos os livros já cadastrados
+    '''
     print("\nMENU DE CATÁLOGO DE LIVROS ")
-    for id, info in livros.items():
+    for indice, info in livros.items():
         print(
-            f"ID : {id} \n"
+            f"ID : {indice} \n"
             f"Titulo : {info['Titulo']} \n"
             f"Isbn : {info['Isbn']}  \n"
             f"Autor(a) : {info['Autor']} \n"
@@ -194,12 +215,16 @@ def listar_livros(livros):
 
 
 def atualizar_livros(livros):
+    '''
+        Pemite a atualização dos livros já cadastrados
+        Usa ISBN como busca
+    '''
     print("\nMENU DE ATUALIZAÇÃO DE LIVROS ")
     isbn_busca = input("Digite a ISBN do livro para atualizar: ").strip()
 
-    for id, info in livros.items():
+    for indice, info in livros.items():
         if info["Isbn"] == isbn_busca:
-            print(f"\nLivro encontrado: {info['Titulo']}\n")
+            print(f"\nLivro encontrado: {info['Titulo']}\n") 
             titulo = input("Informe o Título: ")
             isbn = input("Informe o novo ISBN: ")
             autor = input("Informe o Autor(a): ")
@@ -214,7 +239,7 @@ def atualizar_livros(livros):
                 print("Valores inválidos.\n")
                 return
 
-            livros[id] = {
+            livros[indice] = {
                 "Titulo": titulo,
                 "Isbn": isbn,
                 "Autor": autor,
@@ -236,16 +261,20 @@ def atualizar_livros(livros):
 
 
 def remover_livros(livros):
+    '''
+        Pemite Remover um livro
+        Utiliza ISBN com base
+    '''
     print("\nMENU DE EXCLUSÃO DE LIVROS ")
-    isbn_busca = input("Digite o ISNB do livro que deseja remover: ").strip
+    isbn_busca = input("Digite o ISNB do livro que deseja remover: ").strip()
     if not isbn_busca:
         print("ISBN invalido\n ")
         return
-    for id, info in livros.items():
+    for indice, info in livros.items():
         if info["Isbn"] == isbn_busca:
-            livros.pop(id)
+            livros.pop(indice)
             if salvar_dados(ARQUIVO_LIVROS, livros):
-                print(f"Livro ID {id} Titulo {info['Titulo']} Removido com sucesso\n")
+                print(f"Livro ID {indice} Titulo {info['Titulo']} Removido com sucesso\n")
             else:
                 print("Erro ao salvar\n")
             break
